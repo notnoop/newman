@@ -1,0 +1,15 @@
+# sbt files
+lib_managed
+project/boot
+project/build/target
+target
+
+# Eclipse
+.project
+.classpath
+.metadata
+
+
+# random files
+*~
+.#*
