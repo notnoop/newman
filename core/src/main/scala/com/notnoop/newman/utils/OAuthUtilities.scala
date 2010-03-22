@@ -21,16 +21,12 @@ import com.google.gdata.client.authn.oauth._
 import org.apache.commons.codec.binary.Base64
 
 object OAuthUtilities {
-    val CONSUMER_KEY = "notnoop.com"
-    val CONSUMER_SECRET = "DEADBEEF"
-    private val signer = new XOAuthSigner(CONSUMER_KEY, CONSUMER_SECRET)
-
     implicit def oauthAccountToRichAccount(x: OAuthAccount) = new RichAccount(x)
 
     class RichAccount(x: OAuthAccount) {
-        def encodedIR = signer.encodedRequest(x.email, x.oauthToken, x.oauthSecret)
+        def encodedIR(implicit signer: XOAuthSigner) = signer.encodedRequest(x.email, x.oauthToken, x.oauthSecret)
 
-        def decodedIR = signer.plainRequest(x.email, x.oauthToken, x.oauthSecret)
+        def decodedIR(implicit signer: XOAuthSigner) = signer.plainRequest(x.email, x.oauthToken, x.oauthSecret)
     }
 }
 

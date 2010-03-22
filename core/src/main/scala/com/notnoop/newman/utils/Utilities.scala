@@ -17,7 +17,7 @@ package com.notnoop.newman.utils
 
 import java.io.Closeable
 
-object Utilities {
+private[newman] object Utilities {
 
     def ignoreException(fun: => Unit) : Unit = {
         try {

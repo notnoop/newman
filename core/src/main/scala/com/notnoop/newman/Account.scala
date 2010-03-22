@@ -75,6 +75,10 @@ case class GmailAccount(
     override val folder: String
 ) extends PasswordAccount(email, password, "imaps", "imap.gmail.com", folder)
 
+/**
+ * Represents a Gmail Account to be authenticated with XOAuth authentication
+ * protocol
+ */
 case class GmailOAuthAccount(
     override val email: String,
     override val oauthToken: String,
