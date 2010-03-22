@@ -37,7 +37,7 @@ trait AccountListener extends MessageCountListener {
      * @param the authentication failure error
      */
     def invalidAuthentication(e: AuthenticationFailedException) : Unit
-    
+
     /**
      * Invoked when the account monitoring terminated due to a
      * non-authentication failure, e.g. connectivity errors
