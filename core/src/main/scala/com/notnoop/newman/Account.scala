@@ -22,10 +22,14 @@ import java.net.URL
  * to login to the IMAP service
  */
 sealed abstract class Account {
-    val email: String
-    var protocol: String
-    var mailServer: String
-    var folder: String
+    /** User email **/
+    def email: String
+    /** The protocol used to connect to the server, e.g. IMAP, POP */
+    def protocol: String
+    /** The hostname/IP-address of the mail server, e.g. imap.gmail.com */
+    def mailServer: String
+    /** The folder to be watched */
+    def folder: String
 
     override def hashCode() = 31 + email.hashCode()
 
@@ -35,32 +39,45 @@ sealed abstract class Account {
     }
 }
 
+/**
+ * Represents an email account which gets authenticated with a password.
+ * The password is in clear text
+ */
 case class PasswordAccount(
     email: String,
-    var password: String,
-    var protocol: String,
-    var mailServer: String,
-    var folder: String
+    password: String,
+    protocol: String,
+    mailServer: String,
+    folder: String
 ) extends Account
 
+/**
+ * Represents an email account which gets authenticated via XOAuth protocol
+ * as supported by Gmail.
+ *
+ * @see http://sites.google.com/site/oauthgoog/Home/oauthimap
+ */
 case class OAuthAccount(
     override val email: String,
-    var oauthToken: String,
-    var oauthSecret: String,
-    var protocol: String,
-    var mailServer: String,
-    var folder: String
+    val oauthToken: String,
+    val oauthSecret: String,
+    val protocol: String,
+    val mailServer: String,
+    val folder: String
 ) extends Account
 
+/**
+ * Represents a Gmail Account, with the pre-defiend mail server
+ */
 case class GmailAccount(
-    u: String,
-    p: String,
-    f: String
-) extends PasswordAccount(u, p, "imaps", "imap.gmail.com", f)
+    override val email: String,
+    override val password: String,
+    override val folder: String
+) extends PasswordAccount(email, password, "imaps", "imap.gmail.com", folder)
 
 case class GmailOAuthAccount(
-    val u: String,
-    val ot: String,
-    val os: String,
-    val f: String
-) extends OAuthAccount(u, ot, os, "imaps", "216.239.59.109", f)
+    override val email: String,
+    override val oauthToken: String,
+    override val oauthSecret: String,
+    override val folder: String
+) extends OAuthAccount(email, oauthToken, oauthSecret, "imaps", "216.239.59.109", folder)
