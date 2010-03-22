@@ -19,7 +19,7 @@ import java.io.Closeable
 
 private[newman] object Utilities {
 
-    def ignoreException(fun: => Unit) : Unit = {
+    def ignoreExceptions(fun: => Unit) : Unit = {
         try {
             fun
         } catch {
@@ -27,11 +27,9 @@ private[newman] object Utilities {
         }
     }
 
-    def forceClose(resource: Closeable) {
-        ignoreException { resource.close() }
-    }
+    def forceClose(resource: Closeable) =
+        ignoreExceptions { resource.close() }
 
-    def forceClose(resource: {def close(): Any}) = {
-        ignoreException { resource.close() }
-    }
+    def forceClose(resource: {def close(): Any}) =
+        ignoreExceptions { resource.close() }
 }
