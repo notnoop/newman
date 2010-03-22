@@ -1,15 +1,24 @@
 # sbt files
 lib_managed
+bin
 project/boot
 project/build/target
 target
+
+**/lib_managed
+**/bin
+**/project/boot
+**/project/build/target
+**/target
 
 # Eclipse
 .project
 .classpath
 .metadata
-
+.scala_dependencies
 
 # random files
 *~
 .#*
+TAGS
+

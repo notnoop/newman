@@ -27,7 +27,7 @@ object Utilities {
         }
     }
 
-    def forceClose(resource: Closeable) { 
+    def forceClose(resource: Closeable) {
         ignoreException { resource.close() }
     }
 
