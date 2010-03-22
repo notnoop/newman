@@ -52,11 +52,15 @@ case class OAuthAccount(
     var folder: String
 ) extends Account
 
-object AccountFactory {
-    def GmailPasswordAccount(email: String, password: String, folder: String)
-        = PasswordAccount(email, password, "imaps", "imap.gmail.com", folder)
+case class GmailAccount(
+    u: String,
+    p: String,
+    f: String
+) extends PasswordAccount(u, p, "imaps", "imap.gmail.com", f)
 
-    def GmailOAuthAccount(email: String, oauthToken: String,
-                          oauthSecret: String, folder: String)
-        = OAuthAccount(email, oauthToken, oauthSecret, "imaps", "216.239.59.109", folder)
-}
+case class GmailOAuthAccount(
+    val u: String,
+    val ot: String,
+    val os: String,
+    val f: String
+) extends OAuthAccount(u, ot, os, "imaps", "216.239.59.109", f)

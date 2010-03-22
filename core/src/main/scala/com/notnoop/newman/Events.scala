@@ -50,6 +50,21 @@ class NewmanEventListener(a: Actor) extends AccountListener {
         e.getMessages.foreach {a ! MessageRemovedEvent(_) }
 }
 
-object NewmanEventListener {
+object ActorUtils {
     implicit def acorToAccounListener(e: Actor) = new NewmanEventListener(e)
+    
+    def loopReact(f : PartialFunction[Any, Unit]) : Actor = {
+        val a = actor {
+            loop {
+                react {
+                    f
+                }
+            }
+        }
+        a.start
+        return a
+    }
+
+    def loopReactListener(f : PartialFunction[Any, Unit]) : AccountListener =
+        return loopReact(f)
 }

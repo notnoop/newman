@@ -19,23 +19,28 @@ import com.sun.mail.imap.IMAPFolder
 import javax.mail._
 import com.notnoop.newman.utils.OAuthUtilities._
 
-class NewmanListener(a: Account, listener: AccountListener) {
+import scala.actors.Actor
+
+abstract class NewmanListener {
+    val account: Account
+    val listener: AccountListener
+
     var store: Store = _
     var folder: Folder = _
 
     def login() : Store = {
         val props = System.getProperties
 
-        if (a.isInstanceOf[OAuthAccount]) {
-            val p = a.protocol
+        if (account.isInstanceOf[OAuthAccount]) {
+            val p = account.protocol
             props.setProperty("mail." + p + ".sasl.enable", "true");
             props.setProperty("mail." + p + ".sasl.mechanisms", "XOAUTH");
-            props.setProperty("newman.ir", a.asInstanceOf[OAuthAccount].encodedIR);
+            props.setProperty("newman.ir", account.asInstanceOf[OAuthAccount].encodedIR);
         }
 
         val session = Session.getInstance(props, null)
-        val store = session.getStore(a.protocol)
-        a match {
+        val store = session.getStore(account.protocol)
+        account match {
             case pa : PasswordAccount => store.connect(pa.mailServer, pa.email, pa.password)
             case oa : OAuthAccount => store.connect(oa.mailServer, oa.oauthToken, oa.oauthSecret)
         }
@@ -53,7 +58,7 @@ class NewmanListener(a: Account, listener: AccountListener) {
 
     def monitor() {
         store = login()
-        folder = openFolder(store, a.folder)
+        folder = openFolder(store, account.folder)
         folder.addMessageCountListener(listener)
         listener.accountMonitored(folder)
 
@@ -69,6 +74,7 @@ class NewmanListener(a: Account, listener: AccountListener) {
         val store = login()
         store.connect(null, null, null)
     }
+
 }
 
 object NewmanUtilities {
