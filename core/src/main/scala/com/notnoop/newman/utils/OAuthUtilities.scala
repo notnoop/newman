@@ -81,19 +81,13 @@ class XOAuthSigner(consumerKey: String, consumerSecret: String) {
         }
     }
 
-    def header(method: String, url: String, params: OAuthParameters): String = {
-        val sb = new StringBuilder()
+    private[this] def fpair(key: String, value: String) =
+        OAuthUtil.encode(key) + "=\"" +
+        OAuthUtil.encode(value) + "\""
 
-        sb.append(method).append(' ').append(url).append(' ')
-
-        sb.append(
-            OAuthParameters.OAUTH_SIGNATURE_KEY + "=\"" + OAuthUtil.encode(params.getOAuthSignature())).append("\",")
-
-        sb.append(params.getBaseParameters()
-            .map(x => OAuthUtil.encode(x._1) + "=\"" + OAuthUtil.encode(x._2) + "\"")
-            .mkString(","))
-
-        return sb.toString()
-    }
-
+    def header(method: String, url: String, params: OAuthParameters): String =
+        method + " " + url + " " +
+        fpair(OAuthParameters.OAUTH_SIGNATURE_KEY, params.getOAuthSignature) +
+        "," +
+        params.getBaseParameters().map(x => fpair(x._1, x._2)).mkString(",")
 }
