@@ -24,7 +24,7 @@ class CoreProject(info: ProjectInfo) extends DefaultProject(info)
     // dependencies
     val javamail = "javax.mail" % "mail" % "1.4.1"
     val gdata = "com.google.gdata" % "gdata-core-1.0" % "1.40.2"
-    val codecs = "commons-codec" % "commons-codec" % "1.4"
 
     val scalatest = "org.scalatest" % "scalatest" % "1.0" % "test"
 }
+
