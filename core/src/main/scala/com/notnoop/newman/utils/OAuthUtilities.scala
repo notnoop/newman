@@ -18,15 +18,12 @@ package com.notnoop.newman.utils
 import collection.jcl.Conversions._
 
 import com.google.gdata.client.authn.oauth._
-import org.apache.commons.codec.binary.Base64
 
 object OAuthUtilities {
     implicit def oauthAccountToRichAccount(x: OAuthAccount) = new RichAccount(x)
 
     class RichAccount(x: OAuthAccount) {
-        def encodedIR(implicit signer: XOAuthSigner) = signer.encodedRequest(x.email, x.oauthToken, x.oauthSecret)
-
-        def decodedIR(implicit signer: XOAuthSigner) = signer.plainRequest(x.email, x.oauthToken, x.oauthSecret)
+        def plainIR(implicit signer: XOAuthSigner) = signer.plainRequest(x.email, x.oauthToken, x.oauthSecret)
     }
 }
 
@@ -57,10 +54,6 @@ class XOAuthSigner(consumerKey: String, consumerSecret: String) {
         val hdr = header(METHOD, oauthURL(email), params)
         return hdr
     }
-
-    def encodedRequest(email: String, token: String, tokenSecret: String) =
-        encodeHeader(plainRequest(email, token, tokenSecret))
-
 
     def addCommonRequestParameters(baseUrl: String, httpMethod: String,
             parameters: OAuthParameters, signer: OAuthSigner) {
@@ -94,7 +87,7 @@ class XOAuthSigner(consumerKey: String, consumerSecret: String) {
         sb.append(method).append(' ').append(url).append(' ')
 
         sb.append(
-            OAuthParameters.OAUTH_SIGNATURE_KEY + "=\"" + OAuthUtil.encode(params.getOAuthSignature())).append(",")
+            OAuthParameters.OAUTH_SIGNATURE_KEY + "=\"" + OAuthUtil.encode(params.getOAuthSignature())).append("\",")
 
         sb.append(params.getBaseParameters()
             .map(x => OAuthUtil.encode(x._1) + "=\"" + OAuthUtil.encode(x._2) + "\"")
@@ -102,9 +95,5 @@ class XOAuthSigner(consumerKey: String, consumerSecret: String) {
 
         return sb.toString()
     }
-
-    def encodeHeader(s: String) =
-        new Base64(0, Array(), false)
-            .encodeToString(s.getBytes("UTF-8"))
 
 }

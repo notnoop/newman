@@ -17,9 +17,12 @@ package com.notnoop.newman
 
 import com.sun.mail.imap.IMAPFolder
 import javax.mail._
+import java.security._
 
 import com.notnoop.newman.utils.XOAuthSigner
 import com.notnoop.newman.utils.OAuthUtilities._
+import com.notnoop.newman.utils.XOAuthSaslProvider
+import com.notnoop.newman.utils.XOAuthSaslProvider._
 
 import scala.actors.Actor
 
@@ -56,10 +59,18 @@ abstract class NewmanListener {
             val p = account.protocol
             props.setProperty("mail." + p + ".sasl.enable", "true");
             props.setProperty("mail." + p + ".sasl.mechanisms", "XOAUTH");
-            props.setProperty("newman.ir", account.asInstanceOf[OAuthAccount].encodedIR(signer.get));
+
+            // xoauth implementation specific
+            Security.addProvider(new XOAuthSaslProvider())
+            val oa = account.asInstanceOf[OAuthAccount]
+            props.put(XOAUTH_SIGNER_PROP, signer.get)
+            props.setProperty(XOAUTH_EMAIL_PROP, oa.email)
+            props.setProperty(XOAUTH_TOKEN_PROP, oa.oauthToken)
+            props.setProperty(XOAUTH_TOKEN_SECRET_PROP, oa.oauthSecret)
         }
 
         val session = Session.getInstance(props, null)
+        session.setDebug(true)
         val store = session.getStore(account.protocol)
         account match {
             case pa : PasswordAccount => store.connect(pa.mailServer, pa.email, pa.password)
