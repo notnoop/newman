@@ -49,7 +49,10 @@ case class PasswordAccount(
     protocol: String,
     mailServer: String,
     folder: String
-) extends Account
+) extends Account {
+    def this(email: String, password: String, protocol: String, mailServer: String) =
+        this(email, password, protocol, mailServer, "INBOX")
+}
 
 /**
  * Represents an email account which gets authenticated via XOAuth protocol
@@ -58,30 +61,33 @@ case class PasswordAccount(
  * @see http://sites.google.com/site/oauthgoog/Home/oauthimap
  */
 case class OAuthAccount(
-    override val email: String,
-    val oauthToken: String,
-    val oauthSecret: String,
-    val protocol: String,
-    val mailServer: String,
-    val folder: String
-) extends Account
+    email: String,
+    oauthToken: String,
+    oauthSecret: String,
+    protocol: String,
+    mailServer: String,
+    folder: String
+) extends Account {
+    def this(email: String, oauthToken: String, oauthSecret: String, protocol: String, mailServer: String) =
+        this(email, oauthToken, oauthSecret, protocol, mailServer, "INBOX");
+}
 
 /**
- * Represents a Gmail Account, with the pre-defiend mail server
+ * Factory "method" for creating Gmail IMAP Accounts
  */
-case class GmailAccount(
-    override val email: String,
-    override val password: String,
-    override val folder: String
-) extends PasswordAccount(email, password, "imaps", "imap.gmail.com", folder)
+object GmailAccount {
+    def apply(email: String, password: String) : PasswordAccount =
+        apply(email, password, "INBOX")
+    def apply(email: String, password: String, folder: String) =
+        PasswordAccount(email, password, "imaps", "imap.gmail.com", folder)
+}
 
 /**
- * Represents a Gmail Account to be authenticated with XOAuth authentication
- * protocol
+ * Factory "method" for creating Gmail OAuth IMAP Account
  */
-case class GmailOAuthAccount(
-    override val email: String,
-    override val oauthToken: String,
-    override val oauthSecret: String,
-    override val folder: String
-) extends OAuthAccount(email, oauthToken, oauthSecret, "imaps", "216.239.59.109", folder)
+object GmailOAuthAccount {
+    def apply(email: String, oauthToken: String, oauthSecret: String) : OAuthAccount =
+        apply(email, oauthToken, oauthSecret, "INBOX")
+    def apply(email: String, oauthToken: String, oauthSecret: String, folder: String) =
+        OAuthAccount(email, oauthToken, oauthSecret, "imaps", "216.239.59.109", folder)
+}
