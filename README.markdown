@@ -14,10 +14,9 @@ Sample Use
 To start monitoring an account, you can script the following:
 
     import com.notnoop.newman._
-    import com.notnoop.newman.ActorUtils._
 
     val listener = new NewmanListener {
-        val account = GmailAccount("email", "password", "INBOX")
+        val account = GmailAccount("email", "password")
         val listener = loopReactListener {
             case MessageAddedEvent(e) => println("New email! " + e)
             case _ => // Do nothing!
