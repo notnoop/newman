@@ -15,9 +15,8 @@
  */
 package com.notnoop.newman.utils
 
-import collection.jcl.Conversions._
-
 import com.google.gdata.client.authn.oauth._
+import com.notnoop.newman.OAuthAccount
 
 object OAuthUtilities {
     implicit def oauthAccountToRichAccount(x: OAuthAccount) = new RichAccount(x)
@@ -85,9 +84,28 @@ class XOAuthSigner(consumerKey: String, consumerSecret: String) {
         OAuthUtil.encode(key) + "=\"" +
         OAuthUtil.encode(value) + "\""
 
+    private[this] def baseParam(map: java.util.Map[String, String]) : String = {
+        val sb = new StringBuilder()
+
+        for (pair <- new ScalaWrapper(map.entrySet))
+            sb.append(',').append(fpair(pair.getKey, pair.getValue))
+
+        return sb.toString
+    }
+
     def header(method: String, url: String, params: OAuthParameters): String =
         method + " " + url + " " +
         fpair(OAuthParameters.OAUTH_SIGNATURE_KEY, params.getOAuthSignature) +
-        "," +
-        params.getBaseParameters().map(x => fpair(x._1, x._2)).mkString(",")
+        baseParam(params.getBaseParameters)
+
+
+}
+
+private class ScalaWrapper[A](i:java.lang.Iterable[A]) {
+    def foreach(f: A => Unit): Unit = {
+        val iter = i.iterator
+        while(iter.hasNext){
+          f(iter.next)
+        }
+    }
 }

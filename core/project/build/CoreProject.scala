@@ -21,10 +21,17 @@ class CoreProject(info: ProjectInfo) extends DefaultProject(info)
     val javamailRepo = "Oracle JavaMail repository" at "http://download.java.net/maven/2"
     val gdataRepo = "Mavenized Google GData projects" at "http://mandubian-mvn.googlecode.com/svn/trunk/mandubian-mvn/repository"
 
+    // snapshot repo
+    val snapshotRepo = "Scala Snapshot Repo" at "http://www.scala-tools.org/repo-snapshots/"
+
     // dependencies
     val javamail = "javax.mail" % "mail" % "1.4.1"
     val gdata = "com.google.gdata" % "gdata-core-1.0" % "1.40.2"
 
-    val scalatest = "org.scalatest" % "scalatest" % "1.0" % "test"
+    val scalatest = buildScalaVersion match {
+        case "2.7.7" => "org.scalatest" % "scalatest" % "1.0" % "test"
+        case "2.8.0.Beta1" => "org.scalatest" % "scalatest" % "1.0.1-for-scala-2.8.0.Beta1-SNAPSHOT" % "test"
+        case x => error("Unsupported Scala version " + x)
+    }
 }
 
