@@ -21,6 +21,7 @@ target
 *~
 .#*
 TAGS
+*.swp
 
 # random script files
 MyTest.scala
