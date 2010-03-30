@@ -73,8 +73,10 @@ abstract class NewmanListener {
         session.setDebug(true)
         val store = session.getStore(account.protocol)
         account match {
-            case pa : PasswordAccount => store.connect(pa.mailServer, pa.email, pa.password)
-            case oa : OAuthAccount => store.connect(oa.mailServer, oa.oauthToken, oa.oauthSecret)
+            case pa : PasswordAccount =>
+                store.connect(pa.mailServer, pa.email, pa.password)
+            case oa : OAuthAccount =>
+                store.connect(oa.mailServer, oa.oauthToken, oa.oauthSecret)
         }
 
         return store
@@ -106,7 +108,8 @@ abstract class NewmanListener {
 }
 
 private[newman] object NewmanUtilities {
-    def withPrefix(a : String*) : List[String] = a.toList.map(e => List("[Gmail]/" + e, "[Google Mail]/"+e)).flatten
+    def withPrefix(a : String*) : List[String] =
+      a.toList.map(e => List("[Gmail]/" + e, "[Google Mail]/"+e)).flatten
 
     val folderLocalization: Map[String, List[String]] =
         Map("Inbox" -> List("Inbox", "INBOX"),

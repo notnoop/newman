@@ -91,3 +91,4 @@ object GmailOAuthAccount {
     def apply(email: String, oauthToken: String, oauthSecret: String, folder: String) =
         OAuthAccount(email, oauthToken, oauthSecret, "imaps", "216.239.59.109", folder)
 }
+

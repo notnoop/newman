@@ -33,3 +33,4 @@ private[newman] object Utilities {
     def forceClose(resource: {def close(): Any}) =
         ignoreExceptions { resource.close() }
 }
+

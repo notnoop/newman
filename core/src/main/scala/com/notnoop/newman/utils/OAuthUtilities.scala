@@ -31,14 +31,14 @@ class XOAuthSigner(consumerKey: String, consumerSecret: String) {
 
     def oauthURL(email: String) = "https://mail.google.com/mail/b/" + email + "/imap/"
 
-    def parameters(email: String, token: String, tokenSecret: String) : OAuthParameters = {
+    def parameters(email: String, token: String, tokenSecret: String) = {
         val params = new OAuthParameters()
 
         params.setOAuthConsumerKey(consumerKey)
         params.setOAuthConsumerSecret(consumerSecret)
         params.setOAuthToken(token)
         params.setOAuthTokenSecret(tokenSecret)
-        return params
+        params
     }
 
     def sign(email: String, params: OAuthParameters) {
@@ -47,11 +47,11 @@ class XOAuthSigner(consumerKey: String, consumerSecret: String) {
         addCommonRequestParameters(url, METHOD, params, new OAuthHmacSha1Signer())
     }
 
-    def plainRequest(email: String, token: String, tokenSecret: String): String = {
+    def plainRequest(email: String, token: String, tokenSecret: String) = {
         val params = parameters(email, token, tokenSecret)
         sign(email, params)
         val hdr = header(METHOD, oauthURL(email), params)
-        return hdr
+        hdr
     }
 
     def addCommonRequestParameters(baseUrl: String, httpMethod: String,
@@ -84,16 +84,16 @@ class XOAuthSigner(consumerKey: String, consumerSecret: String) {
         OAuthUtil.encode(key) + "=\"" +
         OAuthUtil.encode(value) + "\""
 
-    private[this] def baseParam(map: java.util.Map[String, String]) : String = {
+    private[this] def baseParam(map: java.util.Map[String, String]) = {
         val sb = new StringBuilder()
 
         for (pair <- new ScalaWrapper(map.entrySet))
             sb.append(',').append(fpair(pair.getKey, pair.getValue))
 
-        return sb.toString
+        sb.toString
     }
 
-    def header(method: String, url: String, params: OAuthParameters): String =
+    def header(method: String, url: String, params: OAuthParameters) =
         method + " " + url + " " +
         fpair(OAuthParameters.OAUTH_SIGNATURE_KEY, params.getOAuthSignature) +
         baseParam(params.getBaseParameters)
