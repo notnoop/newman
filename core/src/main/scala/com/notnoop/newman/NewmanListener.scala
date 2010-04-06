@@ -20,7 +20,6 @@ import javax.mail._
 import java.security._
 
 import com.notnoop.newman.utils.XOAuthConsumer
-import com.notnoop.newman.utils.OAuthUtilities._
 import com.notnoop.newman.utils.XOAuthSaslProvider
 import com.notnoop.newman.utils.XOAuthSaslProvider._
 
@@ -63,7 +62,7 @@ abstract class NewmanListener {
             // xoauth implementation specific
             Security.addProvider(new XOAuthSaslProvider())
             val oa = account.asInstanceOf[OAuthAccount]
-            props.put(XOAUTH_SIGNER_PROP, oauthConsumer.get)
+            props.put(XOAUTH_CONSUMER_PROP, oauthConsumer.get)
             props.setProperty(XOAUTH_EMAIL_PROP, oa.email)
             props.setProperty(XOAUTH_TOKEN_PROP, oa.oauthToken)
             props.setProperty(XOAUTH_TOKEN_SECRET_PROP, oa.oauthSecret)
