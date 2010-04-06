@@ -38,7 +38,7 @@ class XOAuthSaslClientFactory extends SaslClientFactory {
         authorizeationId: String, protocol: String, serverName: String,
         props: java.util.Map[String, _], cbh: CallbackHandler) =
             new XOAuthSaslClient(
-                props.get(XOAUTH_SIGNER_PROP).asInstanceOf[XOAuthSigner],
+                props.get(XOAUTH_SIGNER_PROP).asInstanceOf[OAuthResponseBuilder],
                 props.get(XOAUTH_EMAIL_PROP).toString,
                 props.get(XOAUTH_TOKEN_PROP).toString,
                 props.get(XOAUTH_TOKEN_SECRET_PROP).toString
@@ -47,11 +47,11 @@ class XOAuthSaslClientFactory extends SaslClientFactory {
     def getMechanismNames(props: java.util.Map[String, _]) = Array("XOAUTH")
 }
 
-class XOAuthSaslClient(signer: XOAuthSigner, email: String, token: String, secret: String)
+class XOAuthSaslClient(responseBuilder: OAuthResponseBuilder, email: String, token: String, secret: String)
 extends SaslClient {
     override def getMechanismName() = "XOAUTH"
     override def evaluateChallenge(challenge: Array[Byte])
-        = signer.plainRequest(email, token, secret).getBytes()
+        = responseBuilder.plainRequest(email, token, secret).getBytes()
 
     override def hasInitialResponse() = true
     override def isComplete() = false
@@ -60,3 +60,4 @@ extends SaslClient {
     override def getNegotiatedProperty(propName: String) = null
     override def dispose() {}
 }
+

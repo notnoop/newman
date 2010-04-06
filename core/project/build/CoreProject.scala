@@ -19,14 +19,14 @@ class CoreProject(info: ProjectInfo) extends DefaultProject(info)
 {
     // repositories
     val javamailRepo = "Oracle JavaMail repository" at "http://download.java.net/maven/2"
-    val gdataRepo = "Mavenized Google GData projects" at "http://mandubian-mvn.googlecode.com/svn/trunk/mandubian-mvn/repository"
+    val oauthRepo = "OAuth Library repository" at "http://oauth.googlecode.com/svn/code/maven"
 
     // snapshot repo
     val snapshotRepo = "Scala Snapshot Repo" at "http://www.scala-tools.org/repo-snapshots/"
 
     // dependencies
     val javamail = "javax.mail" % "mail" % "1.4.1"
-    val gdata = "com.google.gdata" % "gdata-core-1.0" % "1.40.2"
+    val oauth = "net.oauth.core" % "oauth" % "20090825"
 
     val scalatest = buildScalaVersion match {
         case "2.7.7" => "org.scalatest" % "scalatest" % "1.0" % "test"

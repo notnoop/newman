@@ -15,88 +15,59 @@
  */
 package com.notnoop.newman.utils
 
-import com.google.gdata.client.authn.oauth._
 import com.notnoop.newman.OAuthAccount
+
+import net.oauth._
 
 object OAuthUtilities {
     implicit def oauthAccountToRichAccount(x: OAuthAccount) = new RichAccount(x)
 
     class RichAccount(x: OAuthAccount) {
-        def plainIR(implicit signer: XOAuthSigner) = signer.plainRequest(x.email, x.oauthToken, x.oauthSecret)
+        def plainIR(implicit signer: OAuthResponseBuilder) =
+            signer.plainRequest(x.email, x.oauthToken, x.oauthSecret)
     }
 }
 
-class XOAuthSigner(consumerKey: String, consumerSecret: String) {
+class OAuthResponseBuilder(consumerKey: String, consumerSecret: String) {
     val METHOD = "GET"
+    val consumer = new OAuthConsumer("", consumerKey, consumerSecret, null)
 
-    def oauthURL(email: String) = "https://mail.google.com/mail/b/" + email + "/imap/"
-
-    def parameters(email: String, token: String, tokenSecret: String) = {
-        val params = new OAuthParameters()
-
-        params.setOAuthConsumerKey(consumerKey)
-        params.setOAuthConsumerSecret(consumerSecret)
-        params.setOAuthToken(token)
-        params.setOAuthTokenSecret(tokenSecret)
-        params
-    }
-
-    def sign(email: String, params: OAuthParameters) {
-        // Sign the request
-        val url = oauthURL(email)
-        addCommonRequestParameters(url, METHOD, params, new OAuthHmacSha1Signer())
-    }
+    def oauthURL(email: String) =
+        "https://mail.google.com/mail/b/" + email + "/imap/"
 
     def plainRequest(email: String, token: String, tokenSecret: String) = {
-        val params = parameters(email, token, tokenSecret)
-        sign(email, params)
-        val hdr = header(METHOD, oauthURL(email), params)
-        hdr
-    }
+        val accessor = new OAuthAccessor(consumer)
+        accessor.tokenSecret = tokenSecret
 
-    def addCommonRequestParameters(baseUrl: String, httpMethod: String,
-            parameters: OAuthParameters, signer: OAuthSigner) {
-        // add the signature method if it doesn't already exist.
-        if (parameters.getOAuthSignatureMethod().length() == 0) {
-            parameters.setOAuthSignatureMethod(signer.getSignatureMethod())
-        }
+        val parameters = new java.util.HashMap[String, String]
+        parameters.put(OAuth.OAUTH_SIGNATURE_METHOD, "HMAC-SHA1")
+        parameters.put(OAuth.OAUTH_TOKEN, token)
 
-        // add the nonce if it doesn't already exist.
-        if (parameters.getOAuthTimestamp().length() == 0) {
-            parameters.setOAuthTimestamp(OAuthUtil.getTimestamp())
-        }
+        val msg = new OAuthMessage(METHOD, oauthURL(email),
+            parameters.entrySet)
+        msg.addRequiredParameters(accessor)
 
-        // add the timestamp if it doesn't already exist.
-        if (parameters.getOAuthNonce().length() == 0) {
-            parameters.setOAuthNonce(OAuthUtil.getNonce())
-        }
-
-        // add the signature if it doesn't already exist.
-        // The signature is calculated by the {@link OAuthSigner}.
-        if (parameters.getOAuthSignature().length() == 0) {
-            val baseString = OAuthUtil.getSignatureBaseString(baseUrl, httpMethod,
-                    parameters.getBaseParameters())
-            parameters.setOAuthSignature(signer.getSignature(baseString, parameters))
-        }
+        header(METHOD, oauthURL(email), msg.getParameters)
     }
 
     private[this] def fpair(key: String, value: String) =
-        OAuthUtil.encode(key) + "=\"" +
-        OAuthUtil.encode(value) + "\""
+        OAuth.percentEncode(key) + "=\"" +
+        OAuth.percentEncode(value) + "\""
 
-    private[this] def baseParam(map: java.util.Map[String, String]) = {
+    private[this] def baseParam(parameters:
+    java.util.List[java.util.Map.Entry[String, String]]) = {
         val sb = new StringBuilder()
 
-        for (pair <- new ScalaWrapper(map.entrySet))
+        for (pair <- new ScalaWrapper(parameters))
             sb.append(',').append(fpair(pair.getKey, pair.getValue))
 
         sb.toString
     }
 
-    def header(method: String, url: String, params: OAuthParameters) =
+    def header(method: String, url: String, params:
+    java.util.List[java.util.Map.Entry[String, String]]) =
         method + " " + url + " " +
-        fpair(OAuthParameters.OAUTH_SIGNATURE_KEY, params.getOAuthSignature) +
-        baseParam(params.getBaseParameters)
+        baseParam(params)
 
 
 }
@@ -109,3 +80,4 @@ private class ScalaWrapper[A](i:java.lang.Iterable[A]) {
         }
     }
 }
+

@@ -19,7 +19,7 @@ import com.sun.mail.imap.IMAPFolder
 import javax.mail._
 import java.security._
 
-import com.notnoop.newman.utils.XOAuthSigner
+import com.notnoop.newman.utils.OAuthResponseBuilder
 import com.notnoop.newman.utils.OAuthUtilities._
 import com.notnoop.newman.utils.XOAuthSaslProvider
 import com.notnoop.newman.utils.XOAuthSaslProvider._
@@ -43,7 +43,7 @@ abstract class NewmanListener {
     /**
      * The signer to be used with XOAuth accounts
      */
-    val signer : Option[XOAuthSigner] = None
+    val signer : Option[OAuthResponseBuilder] = None
 
     private var store: Store = _
     private var folder: Folder = _
