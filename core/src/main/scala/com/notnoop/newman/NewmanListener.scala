@@ -69,7 +69,6 @@ abstract class NewmanListener {
         }
 
         val session = Session.getInstance(props, null)
-        session.setDebug(true)
         val store = session.getStore(account.protocol)
         account match {
             case pa : PasswordAccount =>
