@@ -103,6 +103,9 @@ abstract class NewmanListener {
             }
     }
 
+    def loopReactListener(f : PartialFunction[Any, Unit]) =
+        ActorUtils.loopReactListener(f)
+
 }
 
 private[newman] object NewmanUtilities {
