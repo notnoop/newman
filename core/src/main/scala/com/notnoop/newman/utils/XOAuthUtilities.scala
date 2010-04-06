@@ -19,6 +19,8 @@ import java.security._
 import javax.security.auth.callback.CallbackHandler
 import javax.security.sasl._
 
+import net.oauth.OAuthConsumer
+
 class XOAuthSaslProvider extends
 Provider("gmail.oauth", 1, "XOAuth Implementation") {
     put("SaslClientFactory.XOAUTH", classOf[XOAuthSaslClientFactory].getCanonicalName())
@@ -38,7 +40,7 @@ class XOAuthSaslClientFactory extends SaslClientFactory {
         authorizeationId: String, protocol: String, serverName: String,
         props: java.util.Map[String, _], cbh: CallbackHandler) =
             new XOAuthSaslClient(
-                props.get(XOAUTH_SIGNER_PROP).asInstanceOf[OAuthResponseBuilder],
+                props.get(XOAUTH_SIGNER_PROP).asInstanceOf[XOAuthConsumer],
                 props.get(XOAUTH_EMAIL_PROP).toString,
                 props.get(XOAUTH_TOKEN_PROP).toString,
                 props.get(XOAUTH_TOKEN_SECRET_PROP).toString
@@ -47,11 +49,11 @@ class XOAuthSaslClientFactory extends SaslClientFactory {
     def getMechanismNames(props: java.util.Map[String, _]) = Array("XOAUTH")
 }
 
-class XOAuthSaslClient(responseBuilder: OAuthResponseBuilder, email: String, token: String, secret: String)
+class XOAuthSaslClient(consumer: XOAuthConsumer, email: String, token: String, secret: String)
 extends SaslClient {
     override def getMechanismName() = "XOAUTH"
     override def evaluateChallenge(challenge: Array[Byte])
-        = responseBuilder.plainRequest(email, token, secret).getBytes()
+        = new OAuthResponseBuilder(consumer).plainRequest(email, token, secret).getBytes()
 
     override def hasInitialResponse() = true
     override def isComplete() = false
@@ -59,5 +61,10 @@ extends SaslClient {
     override def wrap(ooutgoing: Array[Byte], offset: Int, len: Int) = null
     override def getNegotiatedProperty(propName: String) = null
     override def dispose() {}
+}
+
+case class XOAuthConsumer(consumerKey: String, consumerSecret: String) {
+    private[utils] val oauthConsumer = new OAuthConsumer("", consumerKey,
+                                                      consumerSecret, null)
 }
 

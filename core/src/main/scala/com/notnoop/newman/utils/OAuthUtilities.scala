@@ -23,20 +23,20 @@ object OAuthUtilities {
     implicit def oauthAccountToRichAccount(x: OAuthAccount) = new RichAccount(x)
 
     class RichAccount(x: OAuthAccount) {
-        def plainIR(implicit signer: OAuthResponseBuilder) =
-            signer.plainRequest(x.email, x.oauthToken, x.oauthSecret)
+        def plainIR(implicit consumer: XOAuthConsumer) =
+            new OAuthResponseBuilder(consumer)
+                .plainRequest(x.email, x.oauthToken, x.oauthSecret)
     }
 }
 
-class OAuthResponseBuilder(consumerKey: String, consumerSecret: String) {
+class OAuthResponseBuilder(consumer: XOAuthConsumer) {
     val METHOD = "GET"
-    val consumer = new OAuthConsumer("", consumerKey, consumerSecret, null)
 
     def oauthURL(email: String) =
         "https://mail.google.com/mail/b/" + email + "/imap/"
 
     def plainRequest(email: String, token: String, tokenSecret: String) = {
-        val accessor = new OAuthAccessor(consumer)
+        val accessor = new OAuthAccessor(consumer.oauthConsumer)
         accessor.tokenSecret = tokenSecret
 
         val parameters = new java.util.HashMap[String, String]

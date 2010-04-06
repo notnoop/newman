@@ -19,7 +19,7 @@ import com.sun.mail.imap.IMAPFolder
 import javax.mail._
 import java.security._
 
-import com.notnoop.newman.utils.OAuthResponseBuilder
+import com.notnoop.newman.utils.XOAuthConsumer
 import com.notnoop.newman.utils.OAuthUtilities._
 import com.notnoop.newman.utils.XOAuthSaslProvider
 import com.notnoop.newman.utils.XOAuthSaslProvider._
@@ -41,9 +41,9 @@ abstract class NewmanListener {
     val listener: AccountListener
 
     /**
-     * The signer to be used with XOAuth accounts
+     * The consumer used with XOauth accounts
      */
-    val signer : Option[OAuthResponseBuilder] = None
+     val oauthConsumer: Option[XOAuthConsumer] = None
 
     private var store: Store = _
     private var folder: Folder = _
@@ -55,7 +55,7 @@ abstract class NewmanListener {
         val props = System.getProperties
 
         if (account.isInstanceOf[OAuthAccount]) {
-            assert(signer.isDefined)
+            assert(oauthConsumer.isDefined)
             val p = account.protocol
             props.setProperty("mail." + p + ".sasl.enable", "true");
             props.setProperty("mail." + p + ".sasl.mechanisms", "XOAUTH");
@@ -63,7 +63,7 @@ abstract class NewmanListener {
             // xoauth implementation specific
             Security.addProvider(new XOAuthSaslProvider())
             val oa = account.asInstanceOf[OAuthAccount]
-            props.put(XOAUTH_SIGNER_PROP, signer.get)
+            props.put(XOAUTH_SIGNER_PROP, oauthConsumer.get)
             props.setProperty(XOAUTH_EMAIL_PROP, oa.email)
             props.setProperty(XOAUTH_TOKEN_PROP, oa.oauthToken)
             props.setProperty(XOAUTH_TOKEN_SECRET_PROP, oa.oauthSecret)
