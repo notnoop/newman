@@ -45,5 +45,6 @@ class NewmanProject(info: ProjectInfo) extends ParentProject(info)
    class RulesProject(info: ProjectInfo) extends DefaultProject(info) {
        val javamail = NewmanProject.this.javamail
        val core = NewmanProject.this.core
+       val jodatime = "joda-time" % "joda-time" % "1.6"
      }
 }

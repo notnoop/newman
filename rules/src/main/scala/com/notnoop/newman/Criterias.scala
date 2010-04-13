@@ -22,6 +22,9 @@ import javax.mail.Multipart
 import javax.mail.BodyPart
 import javax.mail.search.BodyTerm
 
+import org.joda.time.LocalTime
+import org.joda.time.LocalDate
+
 trait Criteria {
   def apply(m: Message): Boolean
 }
@@ -84,5 +87,27 @@ case class HasHeader(headerName: String, pattern: String) extends Criteria {
 case class MailingList(email: String) extends Criteria {
   private[this] val matcher = HasHeader("List-ID", email)
   def apply(m: Message) = matcher(m)
+}
+
+case class ArrivalTimeHour(from: LocalTime, to: LocalTime) {
+  implicit def dateToOrdered(x: LocalTime) = new Ordered[LocalTime] {
+    def compare(y: LocalTime) = x.compareTo(y)
+  }
+
+  def apply(m: Message) = {
+    val date = LocalTime.fromDateFields(m.getReceivedDate())
+    ((from < to) && (from < date && date < to))
+  }
+}
+
+case class ArrivateTimeDate(from: LocalDate, to: LocalDate) {
+  implicit def dateToOrdered(x: LocalDate) = new Ordered[LocalDate] {
+    def compare(y: LocalDate) = x.compareTo(y)
+  }
+
+  def apply(m: Message) = {
+    val date = LocalDate.fromDateFields(m.getReceivedDate())
+    (from < date && date < to)
+  }
 }
 
