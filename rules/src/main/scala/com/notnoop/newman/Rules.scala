@@ -27,13 +27,8 @@ class RuleListener(rules: List[Rule]) extends AccountListener {
     def accountDisabled(e: Exception) = {}
     def messagesRemoved(e: MessageCountEvent) = {}
 
-    def messagesAdded(e: MessageCountEvent) = {
-        for (msg <- e.getMessages) {
-            for (rule <- rules) {
-                rule(msg)
-            }
-        }
-    }
+    def messagesAdded(e: MessageCountEvent) =
+      e.getMessages.foreach(m => rules.foreach(r=> r(m)))
 }
 
 trait Rule {
