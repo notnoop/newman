@@ -40,11 +40,13 @@ class NewmanProject(info: ProjectInfo) extends ParentProject(info)
    class CoreProject(info: ProjectInfo) extends DefaultProject(info) {
        val javamail = NewmanProject.this.javamail
        val oauth = "net.oauth.core" % "oauth" % "20090531"
+       val scalatest = NewmanProject.this.scalatest
    }
 
    class RulesProject(info: ProjectInfo) extends DefaultProject(info) {
        val javamail = NewmanProject.this.javamail
        val core = NewmanProject.this.core
        val jodatime = "joda-time" % "joda-time" % "1.6"
-     }
+       val javatest = NewmanProject.this.scalatest
+   }
 }

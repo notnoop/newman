@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.notnoop.newman.rules.actions
+package com.notnoop.newman.rules
 
 import javax.mail.Message
 import javax.mail.Flags.Flag
