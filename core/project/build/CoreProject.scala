@@ -26,7 +26,7 @@ class CoreProject(info: ProjectInfo) extends DefaultProject(info)
 
     // dependencies
     val javamail = "javax.mail" % "mail" % "1.4.1"
-    val oauth = "net.oauth.core" % "oauth" % "20090825"
+    val oauth = "net.oauth.core" % "oauth" % "20090531"
 
     val scalatest = buildScalaVersion match {
         case "2.7.7" => "org.scalatest" % "scalatest" % "1.0" % "test"
