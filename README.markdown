@@ -36,6 +36,22 @@ The following features are in the road map
   * Provide sample code for sending iPhone and Android push notifications
   * Allow for more sources (e.g. buzz, twitter)
 
+This library is in its very alpha stage at the moment, but ultimately,
+the library should allow for the following:
+
+    val listener = new NewmanListener {
+        val classifier = new EmailClassifier()
+        val phone = new SMSSender("646123456")
+
+        val account = GmailAccount("email", "password")
+        val listener = RuleListener(
+            From("Seinfeld") -> MarkAsSpam(),
+            classifier.Critical() -> And(LabelAs("Critical"), phone.sendSms()),
+            Subject("broccoli") -> Ignore()
+        )
+    }
+    listener.monitor()
+
 How to Contribute
 ------------------------------------
 
