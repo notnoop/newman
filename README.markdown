@@ -26,6 +26,27 @@ To start monitoring an account, you can script the following:
 
 That's it!
 
+Filters Support
+------------------
+
+The Library comes with some custom common filters, some of which aren't
+supported by Google.  The syntax is as follows:
+
+    import com.notnoop.newman._
+    import com.notnoop.newman.rules.
+    import com.notnoop.newman.rules.FilterRule._
+
+    val listener = new NewmanListener {
+        val account = GmailAccount("email", "password")
+        val listener = RuleListener(
+            From("Seinfeld") -> Delete(),
+            HasAttachment() -> LabelAs("TooHeavy")
+            )
+    }
+    listener.monitor()
+
+Your contribution on improving the built-in rules is appreciated.
+
 Next Items
 ------------------
 
