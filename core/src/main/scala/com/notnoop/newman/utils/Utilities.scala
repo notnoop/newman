@@ -19,7 +19,7 @@ import java.io.Closeable
 
 import javax.mail.{Message, Part, Multipart}
 
-object Utilities {
+private[newman] object Utilities {
 
     def ignoreExceptions(fun: => Unit) : Unit = {
         try {
@@ -34,7 +34,9 @@ object Utilities {
 
     def forceClose(resource: {def close(): Any}) =
         ignoreExceptions { resource.close() }
+}
 
+object EmailUtilities {
     def textBodyOf(p: Part) : Option[String] = {
         p.getContent match {
         case text: String =>
@@ -54,7 +56,7 @@ object Utilities {
         }
     }
 
-    val fromPattern = "(.*)<.*>.*".r
+    private[this] val fromPattern = "(.*)<.*>.*".r
     def fromOf(m: Message) = {
         m.getFrom.firstOption match {
             case None => "Unknown"
