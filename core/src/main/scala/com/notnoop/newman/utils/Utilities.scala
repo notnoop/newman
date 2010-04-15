@@ -19,7 +19,7 @@ import java.io.Closeable
 
 import javax.mail.{Message, Part, Multipart}
 
-private[newman] object Utilities {
+object Utilities {
 
     def ignoreExceptions(fun: => Unit) : Unit = {
         try {
