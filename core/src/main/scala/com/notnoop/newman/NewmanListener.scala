@@ -86,9 +86,6 @@ abstract class NewmanListener {
         return folder
     }
 
-    /**
-     * Start the monitoring activity
-     */
     def monitor() {
         store = login()
         folder = openFolder(store, account.folder)

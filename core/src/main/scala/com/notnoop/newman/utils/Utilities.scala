@@ -17,6 +17,8 @@ package com.notnoop.newman.utils
 
 import java.io.Closeable
 
+import javax.mail.{Message, Part, Multipart}
+
 private[newman] object Utilities {
 
     def ignoreExceptions(fun: => Unit) : Unit = {
@@ -32,5 +34,37 @@ private[newman] object Utilities {
 
     def forceClose(resource: {def close(): Any}) =
         ignoreExceptions { resource.close() }
+
+    def textBodyOf(p: Part) : Option[String] = {
+        p.getContent match {
+        case text: String =>
+            if (p.getContentType.contains("TEXT/PLAIN")) Some(text) else None
+        case mp: Multipart =>
+            val count = mp.getCount
+            for (i <- 0 until count) {
+                val p = mp.getBodyPart(i)
+                val text = textBodyOf(p)
+                text match {
+                case Some(_) => return text
+                case _ => // do nothing
+                }
+            }
+            return None
+        case _ => None
+        }
+    }
+
+    val fromPattern = "(.*)<.*>.*".r
+    def fromOf(m: Message) = {
+        m.getFrom.firstOption match {
+            case None => "Unknown"
+            case Some(from) =>
+                from.toString match {
+                    case fromPattern(name) => name
+                    case _ => from
+                }
+        }
+    }
+
 }
 
