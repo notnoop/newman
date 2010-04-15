@@ -100,6 +100,18 @@ abstract class NewmanListener {
             }
     }
 
+    def start() {
+        var shouldContinue = true
+        while (shouldContinue)
+            try {
+            monitor()
+        } catch {
+            case e: FolderClosedException => // nothing
+            case e =>
+            shouldContinue = false
+        }
+    }
+
     def loopReactListener(f : PartialFunction[Any, Unit]) =
         ActorUtils.loopReactListener(f)
 
