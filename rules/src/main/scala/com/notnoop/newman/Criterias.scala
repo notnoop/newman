@@ -53,9 +53,14 @@ case class Body(clause: String) extends Criteria {
   def apply(m: Message) = m.`match`(new BodyTerm(clause))
 }
 
-case class Recepient(person: String) extends Criteria {
+case class Recipient(person: String) extends Criteria {
   def apply(m: Message) =
     m.getAllRecipients().exists(_.toString.indexOf(person) >= 0)
+}
+
+case class RecipientCount(countFilter: (Int) => Boolean) extends Criteria {
+  def apply(m: Message) =
+    countFilter(m.getAllRecipients().length)
 }
 
 case class HasAttachment() extends Criteria {
