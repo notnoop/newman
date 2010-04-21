@@ -42,11 +42,11 @@ case class Or(cs: Criteria*) extends Criteria {
 }
 
 case class From(person: String) extends Criteria {
-  def apply(m: Message) = m.getFrom().exists(_.toString.indexOf(person) >= 0)
+  def apply(m: Message) = m.getFrom().exists(_.toString.contains(person))
 }
 
 case class Subject(clause: String) extends Criteria {
-  def apply(m: Message) = m.getSubject().indexOf(clause) >= 0
+  def apply(m: Message) = m.getSubject().contains(clause)
 }
 
 case class Body(clause: String) extends Criteria {
@@ -55,7 +55,7 @@ case class Body(clause: String) extends Criteria {
 
 case class Recipient(person: String) extends Criteria {
   def apply(m: Message) =
-    m.getAllRecipients().exists(_.toString.indexOf(person) >= 0)
+    m.getAllRecipients().exists(_.toString.contains(person))
 }
 
 case class RecipientCount(countFilter: (Int) => Boolean) extends Criteria {
@@ -84,7 +84,7 @@ case class HasHeader(headerName: String, pattern: String) extends Criteria {
   def apply(m: Message) : Boolean = {
     m.getHeader(headerName) match {
       case null => false
-      case a: Array[String] => a.exists(_.indexOf(pattern) >= 0)
+      case a: Array[String] => a.exists(_.contains(pattern))
     }
   }
 }
