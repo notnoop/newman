@@ -37,6 +37,7 @@ class NewmanProject(info: ProjectInfo) extends ParentProject(info)
            case "2.8.0.Beta1" => "org.scalatest" % "scalatest" % "1.0.1-for-scala-2.8.0.Beta1-SNAPSHOT" % "test"
            case x => error("Unsupported Scala version " + x)
        }
+       val mockito = "org.mockito" % "mockito-all" % "1.8.4" % "test"
    }
 
    class CoreProject(info: ProjectInfo) extends SubProject(info) {
