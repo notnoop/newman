@@ -24,6 +24,7 @@ import javax.mail.search.BodyTerm
 
 import org.joda.time.LocalTime
 import org.joda.time.LocalDate
+import org.joda.time.LocalDateTime
 
 trait Criteria {
   def apply(m: Message): Boolean
@@ -105,7 +106,7 @@ case class ArrivalTimeHour(from: LocalTime, to: LocalTime) {
   }
 }
 
-case class ArrivateTimeDate(from: LocalDate, to: LocalDate) {
+case class ArrivalTimeDate(from: LocalDate, to: LocalDate) {
   implicit def dateToOrdered(x: LocalDate) = new Ordered[LocalDate] {
     def compare(y: LocalDate) = x.compareTo(y)
   }
@@ -114,5 +115,10 @@ case class ArrivateTimeDate(from: LocalDate, to: LocalDate) {
     val date = LocalDate.fromDateFields(m.getReceivedDate())
     (from < date && date < to)
   }
+}
+
+case class ArrivalTime(criteria: (LocalDateTime) => Boolean) {
+  def apply(m: Message) =
+    criteria(LocalDateTime.fromDateFields(m.getReceivedDate()))
 }
 
