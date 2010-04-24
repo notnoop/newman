@@ -47,5 +47,6 @@ class NewmanProject(info: ProjectInfo) extends ParentProject(info)
 
    class RulesProject(info: ProjectInfo) extends SubProject(info) {
        val jodatime = "joda-time" % "joda-time" % "1.6"
+       val httpclient = "commons-httpclient" % "commons-httpclient" % "3.1"
    }
 }

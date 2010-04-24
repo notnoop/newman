@@ -16,8 +16,16 @@
 
 package com.notnoop.newman.rules
 
+import com.notnoop.newman.utils.EmailUtilities
+
 import javax.mail.Message
 import javax.mail.Flags.Flag
+
+import org.apache.commons.httpclient.HttpClient
+import org.apache.commons.httpclient.UsernamePasswordCredentials
+import org.apache.commons.httpclient.methods.PostMethod
+import org.apache.commons.httpclient.auth.AuthScope
+import scala.io.Source
 
 trait Action {
   def apply(x: Message): Unit
@@ -45,5 +53,37 @@ case class markAsStarred() extends Action {
 
 case class ApplyLabel(name: String) extends Action {
   def apply(x: Message) = { throw new RuntimeException("Not Implemented yet") }
+}
+
+case class Notifo(username: String, apiKey: String) extends Action {
+  val requestURL = "https://api.notifo.com/v1/send_notification"
+
+  def pushMessage(title: String, message: String) = {
+    val data = Map("label"->"Newman", "title"->title, "msg"->message)
+
+    val client = new HttpClient
+    client.getParams().setAuthenticationPreemptive(true);
+    val defaultcreds = new UsernamePasswordCredentials(username, apiKey)
+    client.getState().setCredentials(AuthScope.ANY, defaultcreds)
+
+
+    val post = new PostMethod(requestURL)
+    data.foreach(x => post.addParameter(x._1, x._2))
+
+    val i = client.executeMethod(post)
+    println(i)
+
+    val source = Source.fromInputStream(post.getResponseBodyAsStream)
+    source.getLines()
+  }
+
+  def apply(m: Message) = {
+      pushMessage(m.getSubject(),
+        EmailUtilities.textBodyOf(m) match {
+          case Some(text) => text
+          case None => "[No Text]"
+        }
+      )
+  }
 }
 
