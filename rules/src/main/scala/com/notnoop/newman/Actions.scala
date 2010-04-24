@@ -73,16 +73,12 @@ case class Notifo(username: String, apiKey: String) extends Action {
     val i = client.executeMethod(post)
     println(i)
 
-    val source = Source.fromInputStream(post.getResponseBodyAsStream)
-    source.getLines()
+    post.getResponseBodyAsString
   }
 
   def apply(m: Message) = {
-      pushMessage(m.getSubject(),
-        EmailUtilities.textBodyOf(m) match {
-          case Some(text) => text
-          case None => "[No Text]"
-        }
+      pushMessage(EmailUtilities.fromOf(m) + ":" + m.getSubject(),
+        EmailUtilities.textBodyOf(m).getOrElse("[No Text]")
       )
   }
 }
