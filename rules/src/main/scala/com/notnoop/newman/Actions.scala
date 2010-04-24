@@ -78,8 +78,7 @@ case class Notifo(username: String, apiKey: String) extends Action {
 
   def apply(m: Message) = {
       pushMessage(EmailUtilities.fromOf(m) + ":" + m.getSubject(),
-        EmailUtilities.textBodyOf(m).getOrElse("[No Text]")
-      )
+        EmailUtilities.textBodyOf(m).getOrElse("[No Text]"))
   }
 }
 
