@@ -21,16 +21,14 @@ import javax.mail.Address
 import javax.mail.internet.InternetAddress
 
 import org.specs._
+import org.specs.mock.MockitoStubs
 
-import org.mockito.Mockito
-import org.mockito.Mockito._
-
-object MessageFactory {
+object MessageFactory extends MockitoStubs {
 
     def msgFrom(from: String*) = {
-        val m = Mockito.mock(classOf[Message])
+        val m = mock[Message]
         val fromAddr: Array[Address] = from.map(new InternetAddress(_)).toArray
-        when(m.getFrom).thenReturn(fromAddr)
+        m.getFrom returns fromAddr
         m
     }
 }
