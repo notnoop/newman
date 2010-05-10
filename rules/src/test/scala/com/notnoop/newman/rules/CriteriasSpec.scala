@@ -20,38 +20,51 @@ import javax.mail.Message
 import javax.mail.Address
 import javax.mail.internet.InternetAddress
 
-import org.scalatest.mock.MockitoSugar
-import org.scalatest.Spec
-import org.scalatest.matchers.ShouldMatchers
+import org.specs._
 
+import org.mockito.Mockito
 import org.mockito.Mockito._
 
-class FromSpec extends Spec with ShouldMatchers with MockitoSugar {
-    def messageFrom(from: Array[String]) = {
-        val m = mock[Message]
-        val fromAddr: Array[Address] = from.map(new InternetAddress(_))
+object MessageFactory {
+
+    def msgFrom(from: String*) = {
+        val m = Mockito.mock(classOf[Message])
+        val fromAddr: Array[Address] = from.map(new InternetAddress(_)).toArray
         when(m.getFrom).thenReturn(fromAddr)
         m
     }
+}
 
-    describe("From criteria") {
-        val from = From("test@example.com")
+class CriteriasSpec extends Specification {
 
-        def testFrom(msg: String, fromAddr: Array[String], expected: Boolean) =
-            it("should handle " + msg) {
-                val m = messageFrom(fromAddr)
-                from(m) should be(expected)
-            }
+  "From criteria" should {
+    val from = From("test@example.com")
+    import MessageFactory._
 
-        testFrom("empty froms", Array(), false)
-        testFrom("other from", Array("other@example.com"), false)
-        testFrom("from target", Array("test@example.com"), true)
-
-        testFrom("Sophisticated", Array("What <other@example.com>"), false)
-        testFrom("True sophisticated", Array("What <test@example.com>"), true)
-
-        testFrom("In Array false", Array("o@ex.com", "what@ex.com"), false)
-        testFrom("In Array true", Array("o@ex.com", "test@example.com"), true)
+    "handle empty froms" in {
+      from(msgFrom()) must be(false)
     }
+
+    "ignore other froms" in {
+      from(msgFrom("other@example.com")) must be(false)
+    }
+
+    "match expected froms" in {
+      from(msgFrom("test@example.com")) must be(true)
+    }
+
+    "handle cases with name specified" in {
+      from(msgFrom("What <other@example.com>")) must be(false)
+      from(msgFrom("What <test@example.com>")) must be(true)
+    }
+
+    "matches array if contains one of expected" in {
+      from(msgFrom("o@ex.com", "what@ex.com", "test@example.com")) must be(true)
+    }
+
+    "ignore array if doesn't contain any of specified froms" in {
+      from(msgFrom("o@ex.com", "what@ex.com")) must be(false)
+    }
+  }
 }
 

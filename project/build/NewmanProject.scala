@@ -32,12 +32,8 @@ class NewmanProject(info: ProjectInfo) extends ParentProject(info)
    protected class SubProject(info: ProjectInfo) extends DefaultProject(info) {
        val javamail = "javax.mail" % "mail" % "1.4.1"
 
-       val scalatest = buildScalaVersion match {
-           case "2.7.7" => "org.scalatest" % "scalatest" % "1.0" % "test"
-           case "2.8.0.Beta1" => "org.scalatest" % "scalatest" %
-           "1.0.1-for-scala-2.8.0.Beta1-with-test-interfaces-0.3-SNAPSHOT" % "test"
-           case x => error("Unsupported Scala version " + x)
-       }
+       val specs = "org.scala-tools.testing" % "specs" % "1.6.2.1" % "test"
+
        val mockito = "org.mockito" % "mockito-all" % "1.8.4" % "test"
    }
 

@@ -16,37 +16,38 @@
 package com.notnoop.newman.utils
 
 import com.notnoop.newman.utils.Utilities._
-import org.scalatest.Spec
-import org.scalatest.matchers.ShouldMatchers
-import scala.collection.mutable.Stack
 
-class IgnoreExceptions extends Spec with ShouldMatchers {
+import org.specs._
 
-    describe("Ignore Exceptions") {
-        it("should suppress exceptions") {
+class IgnoreExceptions extends Specification {
+
+    "Ignore Exceptions" should {
+        "should suppress exceptions" in {
             ignoreExceptions {
                 val a = null
                 a.toString
             }
+            // ensure that this line is executed
+            true must be(true)
         }
 
-        it("should actually execute") {
+        "should actually execute" in {
             var a = 1
             ignoreExceptions {
                 a = 2
             }
-            a should be(2)
+            a must be(2)
         }
 
-        it("should partially execute") {
+        "should partially execute" in {
             var (a, b) = (1, 2)
             ignoreExceptions {
                 a = 2
                 val random = 2 / 0
                 b = 1
             }
-            a should be(2)
-            b should be(2)
+            a must be(2)
+            b must be(2)
         }
     }
 
