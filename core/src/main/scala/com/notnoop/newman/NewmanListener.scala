@@ -18,6 +18,7 @@ package com.notnoop.newman
 import com.sun.mail.imap.IMAPFolder
 import javax.mail._
 import java.security._
+import java.util.{Timer, TimerTask}
 
 import com.notnoop.newman.utils.XOAuthConsumer
 import com.notnoop.newman.utils.XOAuthSaslProvider
@@ -92,6 +93,7 @@ abstract class NewmanListener {
         folder.addMessageCountListener(listener)
         listener.accountMonitored(folder)
 
+        schedulePing()
         while (true)
             try {
                 folder.asInstanceOf[IMAPFolder].idle()
@@ -115,6 +117,20 @@ abstract class NewmanListener {
     def loopReactListener(f : PartialFunction[Any, Unit]) =
         ActorUtils.loopReactListener(f)
 
+    val timer = new Timer("Ping(" + account.email + ")")
+    def schedulePing() = {
+        object PingTask extends TimerTask {
+          override def run() {
+            println("Sending ping")
+            if (folder != null) {
+              val n = folder.getMessageCount()
+              println("Folder has {} messages")
+            }
+          }
+        }
+
+        timer.schedule(PingTask, 0, 20 * 1000)
+    }
 }
 
 private[newman] object NewmanUtilities {
