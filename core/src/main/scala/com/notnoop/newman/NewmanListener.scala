@@ -127,7 +127,7 @@ abstract class NewmanListener {
     def loopReactListener(f : PartialFunction[Any, Unit]) =
         ActorUtils.loopReactListener(f)
 
-    val timer = new Timer("Ping(" + account.email + ")")
+    val timer = new Timer("Ping Service")
     def schedulePing() = {
         object PingTask extends TimerTask {
           override def run() {
@@ -139,7 +139,7 @@ abstract class NewmanListener {
           }
         }
 
-        timer.schedule(PingTask, 0, 20 * 1000)
+        timer.schedule(PingTask, 0, 20 * 60 * 1000)
     }
 }
 
