@@ -31,6 +31,7 @@ class NewmanProject(info: ProjectInfo) extends ParentProject(info)
    // common dependencies
    protected class SubProject(info: ProjectInfo) extends DefaultProject(info) {
        val javamail = "javax.mail" % "mail" % "1.4.1"
+       val logging = "org.slf4j" % "slf4j-api" % "1.6.0"
 
        val specs = "org.scala-tools.testing" % "specs" % "1.6.2.1" % "test"
 

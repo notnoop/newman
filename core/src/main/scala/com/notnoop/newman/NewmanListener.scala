@@ -6,7 +6,7 @@
  * You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
-
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,6 +20,8 @@ import javax.mail._
 import java.security._
 import java.util.{Timer, TimerTask}
 
+import org.slf4j.{Logger, LoggerFactory}
+
 import com.notnoop.newman.utils.XOAuthConsumer
 import com.notnoop.newman.utils.XOAuthSaslProvider
 import com.notnoop.newman.utils.XOAuthSaslProvider._
@@ -30,6 +32,8 @@ import scala.actors.Actor
  * Monitors the IMAP Account and notifies the listener of actions
  */
 abstract class NewmanListener {
+    val logger = LoggerFactory.getLogger(getClass)
+
     /**
      * The account to be monitored
      */
@@ -88,12 +92,15 @@ abstract class NewmanListener {
     }
 
     def monitor() {
+        logger.debug("Start monitoring account: {}", account.email)
         store = login()
         folder = openFolder(store, account.folder)
         folder.addMessageCountListener(listener)
         listener.accountMonitored(folder)
 
         schedulePing()
+
+        logger.debug("Logged in and started")
         while (true)
             try {
                 folder.asInstanceOf[IMAPFolder].idle()
@@ -107,11 +114,14 @@ abstract class NewmanListener {
         while (shouldContinue)
             try {
             monitor()
-        } catch {
+          } catch {
             case e: FolderClosedException => // nothing
+              logger.debug("Folder was closed, restarting...")
             case e =>
-            shouldContinue = false
+              logger.warn("Unexpected error, e")
+              shouldContinue = false
         }
+        logger.debug("Stopped account monitoring")
     }
 
     def loopReactListener(f : PartialFunction[Any, Unit]) =
@@ -121,10 +131,10 @@ abstract class NewmanListener {
     def schedulePing() = {
         object PingTask extends TimerTask {
           override def run() {
-            println("Sending ping")
+            logger.debug("Sending ping")
             if (folder != null) {
               val n = folder.getMessageCount()
-              println("Folder has {} messages")
+              logger.debug("Folder has {} messages", n)
             }
           }
         }
