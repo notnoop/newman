@@ -139,7 +139,7 @@ abstract class NewmanListener {
           }
         }
 
-        timer.schedule(PingTask, 0, 20 * 60 * 1000)
+        timer.schedule(PingTask, 0, 5 * 60 * 1000)
     }
 }
 
