@@ -118,7 +118,7 @@ abstract class NewmanListener {
             case e: FolderClosedException => // nothing
               logger.debug("Folder was closed, restarting...")
             case e =>
-              logger.warn("Unexpected error, e")
+              logger.warn("Unexpected error", e)
               shouldContinue = false
         }
         logger.debug("Stopped account monitoring")
@@ -133,8 +133,12 @@ abstract class NewmanListener {
           override def run() {
             logger.debug("Sending ping")
             if (folder != null) {
-              val n = folder.getMessageCount()
-              logger.debug("Folder has {} messages", n)
+              try {
+                val n = folder.getMessageCount()
+                  logger.debug("Folder has {} messages", n)
+              } catch {
+                case e => logger.warn("Unexpected error")
+              }
             }
           }
         }
